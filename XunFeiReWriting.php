@@ -243,7 +243,6 @@ class XunFeiReWriting
         }
         curl_close($curl);
         $responseBody = json_decode($response);
-        Log::record($response, "讯飞文本改写");
         if ($responseBody->header->code != 0) {
             return [
                 "code" => 201,
