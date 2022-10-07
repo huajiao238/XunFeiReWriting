@@ -4,12 +4,11 @@
 ### 调用示例
 
 ```
-$xunfei = new XunFeiReWriting();
-$xunfei->setAppKey("你的app key")->setAppSecret("你的App secret")->setAppId("你的app ID")->setContent("要改写的文本内容")->get();
+XunFeiReWriting::getInstance()->setAppKey("你的app key")->setAppSecret("你的App secret")->setAppId("你的app ID")->setContent("要改写的文本内容")->get();
 ```
 当然， 你也可以在类中将appKey、appSecret、appID等固定字段写死，然后调用：
 ```
-$xunfei->setContent("要改写的内容")->get();
+XunFeiReWriting::getInstance()->setContent("要改写的内容")->get();
 ```
 即可。
 
