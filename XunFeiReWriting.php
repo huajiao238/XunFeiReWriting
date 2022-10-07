@@ -5,29 +5,53 @@
  *@email: 1032601165@qq.com
  */
 
-class XunFeiRewriting
+class XunFeiReWriting
 {
-    protected $app_key = "你的api key";
-    protected $app_secret = "你的api secret";
-    protected $date = "";
-    protected $url = "https://api.xf-yun.com/v1/private/se3acbe7f";
-    protected $content = "要改的文本内容";
-    protected $level = "L3";
-    protected $app_id = "你的appID";
+    private $app_key = "";
+    private $app_secret = "";
+    private $date = "";
+    private $url = "https://api.xf-yun.com/v1/private/se3acbe7f";
+    private $content = "要改的文本内容";
+    private $level = "L3";
+    private $app_id = "";
+    private static $instance;
 
 
-    public function __construct()
+    /**
+     * 禁止new
+     */
+    private function __construct()
     {
         $this->date = gmdate('D, d M Y H:i:s') . ' GMT';
 
     }
 
     /**
+     * 禁止clone
+     * @return void
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * 获得唯一实例
+     * @return XunFeiReWriting
+     */
+    public static function getInstance(): XunFeiReWriting
+    {
+        if (!self::$instance instanceof self) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
      * 设置app key
      * @param string $app_key app key
-     * @return $this
+     * @return XunFeiReWriting
      */
-    public function setAppKey(string $app_key): self
+    public function setAppKey(string $app_key): XunFeiReWriting
     {
         $this->app_key = $app_key;
         return $this;
@@ -37,9 +61,9 @@ class XunFeiRewriting
     /**
      * 设置app secret
      * @param string $app_secret app secret
-     * @return $this
+     * @return XunFeiReWriting
      */
-    public function setAppSecret(string $app_secret): self
+    public function setAppSecret(string $app_secret): XunFeiReWriting
     {
         $this->app_secret = $app_secret;
         return $this;
@@ -48,9 +72,9 @@ class XunFeiRewriting
     /**
      * 设置app id
      * @param string $app_id app id
-     * @return $this
+     * @return XunFeiReWriting
      */
-    public function setAppId(string $app_id): self
+    public function setAppId(string $app_id): XunFeiReWriting
     {
         $this->app_id = $app_id;
         return $this;
@@ -59,9 +83,9 @@ class XunFeiRewriting
     /**
      * 设置改写内容
      * @param string $content 需要改写的内容
-     * @return $this
+     * @return XunFeiReWriting
      */
-    public function setContent(string $content): self
+    public function setContent(string $content): XunFeiReWriting
     {
         $this->content = $content;
         return $this;
@@ -72,7 +96,7 @@ class XunFeiRewriting
      * @param string $level 改写等级（L1~L6）
      * @return $this
      */
-    public function setLevel(string $level): self
+    public function setLevel(string $level): XunFeiReWriting
     {
         $this->level = $level;
         return $this;
@@ -219,15 +243,17 @@ class XunFeiRewriting
         }
         curl_close($curl);
         $responseBody = json_decode($response);
+        Log::record($response, "讯飞文本改写");
         if ($responseBody->header->code != 0) {
             return [
                 "code" => 201,
                 "message" => $responseBody->header->message
             ];
         }
+        $messageArray = json_decode(base64_decode($responseBody->payload->result->text));
         return [
             "code" => 200,
-            "message" => base64_decode($responseBody->payload->result->text)
+            "message" => is_array($messageArray) ? $messageArray[0] ? $messageArray[0][0] ?: "" : "" : ""
         ];
     }
 
